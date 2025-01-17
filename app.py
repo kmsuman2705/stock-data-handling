@@ -1,5 +1,6 @@
 import yfinance as yf
 import pandas as pd
+from datetime import datetime, timedelta
 
 class DataDownloader:
     def __init__(self, symbol, start_date, end_date):
@@ -8,17 +9,22 @@ class DataDownloader:
         self.end_date = end_date
 
     def download_data(self):
+        # Convert end_date to datetime and add 1 day to it
+        end_date_plus_one = datetime.strptime(self.end_date, '%Y-%m-%d') + timedelta(days=1)
+        end_date_plus_one = end_date_plus_one.strftime('%Y-%m-%d')  # Convert back to string format
+        
         # Append '.NS' for NSE stock symbols
         symbol_with_suffix = self.symbol + ".NS"
-        data = yf.download(symbol_with_suffix, start=self.start_date, end=self.end_date)
-
+        
+        # Download data from yfinance with the adjusted end date (+1)
+        data = yf.download(symbol_with_suffix, start=self.start_date, end=end_date_plus_one)
+        
         # Check if data is empty
         if data.empty:
-            print(f"Warning: No data found for symbol {symbol_with_suffix} between {self.start_date} and {self.end_date}.")
+            print(f"Warning: No data found for symbol {symbol_with_suffix} between {self.start_date} and {end_date_plus_one}.")
             return None
 
-        # Avoid printing unnecessary warnings for missing dates
-        # Simply return the available data for the requested date range
+        # Return the data
         return data
 
 class DataFeeder:
