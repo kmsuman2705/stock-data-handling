@@ -1,1 +1,1 @@
-# stock-data-handling
+pip install yfinance pandas openpyxl
